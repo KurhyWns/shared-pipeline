@@ -1,3 +1,4 @@
+---
 name: Lint
 on:
   workflow_call:
@@ -37,5 +38,6 @@ jobs:
       - name: YAML Lint Summary
         run: |
           echo "## YAML Lint Results" >> $GITHUB_STEP_SUMMARY
-          echo "### Scan Paths: ${{ inputs.scan-paths }}" >> $GITHUB_STEP_SUMMARY
+          echo "### Scan Paths: ${{ inputs.scan-paths }}" >> \
+            $GITHUB_STEP_SUMMARY
           echo "### Tool: yamllint" >> $GITHUB_STEP_SUMMARY
