@@ -1,0 +1,42 @@
+---
+name: Security
+on:
+  workflow_call:
+    inputs:
+      scan-paths:
+        description: 'Comma-separated paths to scan'
+        required: false
+        default: '.'
+        type: string
+      fail-on-errors:
+        description: 'Fail workflow if security issues are found'
+        required: false
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  trivy-scan:
+    name: Trivy Vulnerability Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '${{ inputs.scan-paths }}'
+          format: 'table'
+          exit-code: '1'
+
+      - name: Trivy Summary
+        run: |
+          echo "## Trivy Vulnerability Scan" >> $GITHUB_STEP_SUMMARY
+          echo "### Scan Paths: ${{ inputs.scan-paths }}" >> \
+            $GITHUB_STEP_SUMMARY
+          echo "### Tool: Trivy" >> $GITHUB_STEP_SUMMARY
