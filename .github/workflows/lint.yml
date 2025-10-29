@@ -1,0 +1,41 @@
+name: Lint
+on:
+  workflow_call:
+    inputs:
+      scan-paths:
+        description: 'Comma-separated paths to scan'
+        required: false
+        default: '.'
+        type: string
+      fail-on-errors:
+        description: 'Fail workflow if linting errors are found'
+        required: false
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  yaml-lint:
+    name: YAML Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install yamllint
+        run: |
+          python -m pip install --upgrade pip
+          pip install yamllint
+
+      - name: Run yamllint
+        run: |
+          echo "Scanning YAML files in: ${{ inputs.scan-paths }}"
+          yamllint ${{ inputs.scan-paths }} --format parsable
+
+      - name: YAML Lint Summary
+        run: |
+          echo "## YAML Lint Results" >> $GITHUB_STEP_SUMMARY
+          echo "### Scan Paths: ${{ inputs.scan-paths }}" >> $GITHUB_STEP_SUMMARY
+          echo "### Tool: yamllint" >> $GITHUB_STEP_SUMMARY
