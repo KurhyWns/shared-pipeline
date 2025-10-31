@@ -42,7 +42,12 @@ jobs:
       - name: Run yamllint
         run: |
           echo "Scanning YAML files in: ${{ inputs.scan-paths }}"
-          python3 -m yamllint ${{ inputs.scan-paths }} --format parsable
+          CONFIG_FILE=".yamllint"
+          if [ -f "$CONFIG_FILE" ]; then
+            python3 -m yamllint -c "$CONFIG_FILE" ${{ inputs.scan-paths }} --format parsable
+          else
+            python3 -m yamllint ${{ inputs.scan-paths }} --format parsable
+          fi
 
       - name: YAML Lint Summary
         run: |

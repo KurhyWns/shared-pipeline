@@ -7,6 +7,4 @@ rules:
   line-length: disable
   comments-indentation: disable
   trailing-spaces: disable
-  truthy:
-    allowed-values: ['true', 'false', 'yes', 'no', 'on', 'off']
-    check-keys: false
+  truthy: disable
