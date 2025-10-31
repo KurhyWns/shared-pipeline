@@ -12,22 +12,19 @@ permissions:
 
 jobs:
   secrets-detection:
-    runs-on: self-hosted
     uses: ./.github/workflows/secrets-detection.yml
     with:
       scan-paths: '.'
       fail-on-secrets: true
 
   lint:
-    runs-on: self-hosted
-    uses: KurhyWns/shared-pipeline/.github/workflows/lint.yml@main
+    uses: ./.github/workflows/lint.yml
     with:
       scan-paths: '.'
       fail-on-errors: true
 
   security:
-    runs-on: self-hosted
-    uses: KurhyWns/shared-pipeline/.github/workflows/security.yml@main
+    uses: ./.github/workflows/security.yml
     with:
       scan-paths: '.'
       fail-on-errors: true
