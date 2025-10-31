@@ -42,7 +42,7 @@ jobs:
       - name: Run yamllint
         run: |
           echo "Scanning YAML files in: ${{ inputs.scan-paths }}"
-          yamllint ${{ inputs.scan-paths }} --format parsable
+          python3 -m yamllint ${{ inputs.scan-paths }} --format parsable
 
       - name: YAML Lint Summary
         run: |
