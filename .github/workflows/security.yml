@@ -21,7 +21,7 @@ permissions:
 jobs:
   trivy-scan:
     name: Trivy Vulnerability Scan
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event.inputs.runner || 'self-hosted' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
