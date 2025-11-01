@@ -20,7 +20,7 @@ permissions:
 jobs:
   yaml-lint:
     name: YAML Lint
-    runs-on: ${{ github.event.inputs.runner || 'self-hosted' }}
+    runs-on: self-hosted
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
