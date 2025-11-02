@@ -25,7 +25,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install python3 and yamllint
+      - name: Check for yamllint
+        id: check_yamllint
+        run: |
+          if command -v yamllint &> /dev/null; then
+            echo "yamllint found in PATH"
+            echo "installed=true" >> $GITHUB_OUTPUT
+          elif python3 -m yamllint --version &> /dev/null 2>&1; then
+            echo "yamllint found as python module"
+            echo "installed=true" >> $GITHUB_OUTPUT
+          else
+            echo "yamllint not found, will install"
+            echo "installed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Install python3 and yamllint (if needed)
+        if: steps.check_yamllint.outputs.installed == 'false'
         run: |
           if command -v apt-get &> /dev/null; then
             if [ "$EUID" -eq 0 ]; then
@@ -36,17 +51,22 @@ jobs:
           elif command -v apk &> /dev/null; then
             apk add --no-cache python3 py3-pip
           fi
-          python3 -m pip install --upgrade pip
-          python3 -m pip install yamllint
+          python3 -m pip install --quiet yamllint
 
       - name: Run yamllint
         run: |
           echo "Scanning YAML files in: ${{ inputs.scan-paths }}"
           CONFIG_FILE=".yamllint"
-          if [ -f "$CONFIG_FILE" ]; then
-            python3 -m yamllint -c "$CONFIG_FILE" ${{ inputs.scan-paths }} --format parsable
+          # Try yamllint command first, fallback to python module
+          if command -v yamllint &> /dev/null; then
+            YAMLLINT_CMD="yamllint"
           else
-            python3 -m yamllint ${{ inputs.scan-paths }} --format parsable
+            YAMLLINT_CMD="python3 -m yamllint"
+          fi
+          if [ -f "$CONFIG_FILE" ]; then
+            $YAMLLINT_CMD -c "$CONFIG_FILE" ${{ inputs.scan-paths }} --format parsable
+          else
+            $YAMLLINT_CMD ${{ inputs.scan-paths }} --format parsable
           fi
 
       - name: YAML Lint Summary
